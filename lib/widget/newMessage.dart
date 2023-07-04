@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 class NewMessage extends StatefulWidget {
-  const NewMessage({Key? key});
+  final String collectionName;
+  const NewMessage({Key? key, required this.collectionName});
 
   @override
   State<NewMessage> createState() => _NewMessageState();
@@ -34,7 +35,7 @@ class _NewMessageState extends State<NewMessage> {
         .doc(userId!.uid)
         .get();
     //send it to firebase
-    FirebaseFirestore.instance.collection('chat').add({
+    FirebaseFirestore.instance.collection(widget.collectionName).add({
       'text': enteredMessage,
       'time': Timestamp.now(),
       'userId': userId.uid,

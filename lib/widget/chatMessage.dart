@@ -4,14 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:hey/widget/messageBubble.dart';
 
 class ChatMessage extends StatelessWidget {
-  const ChatMessage({super.key});
+  final String collectionName; 
+  const ChatMessage({super.key, required this.collectionName});
 
   @override
   Widget build(BuildContext context) {
     final authenticatedUser = FirebaseAuth.instance.currentUser!;
     return StreamBuilder(
         stream: FirebaseFirestore.instance
-            .collection('chat')
+            .collection(collectionName)
             .orderBy('time', descending: true)
             .snapshots(),
         builder: (context, chatSnapshot) {

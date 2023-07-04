@@ -7,16 +7,17 @@ import 'package:hey/widget/chatMessage.dart';
 import 'package:hey/widget/newMessage.dart';
 
 class Home extends StatefulWidget {
-  const Home({super.key});
+  const Home({Key? key});
 
   @override
-  State<Home> createState() => _HomeState();
+  _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
   String userName = '';
   String userEmail = '';
   String imageUrl = '';
+  String collection = 'chat';
 
   @override
   void initState() {
@@ -37,94 +38,162 @@ class _HomeState extends State<Home> {
     });
   }
 
+  void updateCollection(String newCollection) {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      Navigator.pop(context);
+    });
+    setState(() {
+      collection = newCollection;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size.height;
-    final chatscreen = ChatMessage();
     return Scaffold(
-        backgroundColor: const Color.fromRGBO(41, 47, 63, 0.5),
-        drawer: Drawer(
-          child: Container(
-            color: const Color.fromRGBO(
-                41, 47, 63, 0.5), // Set background color for the entire drawer
-            child: ListView(
-              children: [
-                UserAccountsDrawerHeader(
-                  accountName: Text(userName),
-                  accountEmail: Text(
-                    userEmail,
-                  ),
-                  currentAccountPicture: CircleAvatar(
+      backgroundColor: const Color.fromRGBO(41, 47, 63, 0.5),
+      drawer: Drawer(
+        child: Container(
+          color: const Color.fromRGBO(41, 47, 63, 0.5),
+          child: ListView(
+            children: [
+              Container(
+                color: const Color.fromRGBO(41, 47, 63, 0.5),
+                child: ListTile(
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  leading: CircleAvatar(
                     backgroundImage: NetworkImage(imageUrl),
                   ),
-                  decoration: BoxDecoration(
-                    color: Color.fromRGBO(41, 47, 63, 0.5),
+                  title: Text(
+                    userName,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.white,
+                    ),
+                  ),
+                  subtitle: Text(
+                    userEmail,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-                ListTile(
-                  title: Text('Item 1'),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
                   onTap: () {
-                    // Handle item 1 tap
+                    updateCollection('chat');
                   },
+                  child: const ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: AssetImage('assets/general.png'),
+                    ),
+                    title: Text(
+                      'General Channel',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
-                ListTile(
-                  title: Text('Item 2'),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
                   onTap: () {
-                    // Handle item 2 tap
+                    updateCollection('Anime Soul');
                   },
+                  child: const ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: AssetImage('assets/animeSoul.png'),
+                    ),
+                    title: Text(
+                      'Anime Soul',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
-                ListTile(
-                  title: Text('Item 3'),
+              ),
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
                   onTap: () {
-                    // Handle item 3 tap
+                    updateCollection('Humor');
                   },
+                  child: const ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: AssetImage('assets/humor.png'),
+                    ),
+                    title: Text(
+                      'Humor',
+                      style: TextStyle(
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                 ),
-                ListTile(
-                  title: Text('Item 4'),
-                  onTap: () {
-                    // Handle item 4 tap
-                  },
-                ),
-                ListTile(
-                  title: Text('Item 5'),
-                  onTap: () {
-                    // Handle item 5 tap
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-        appBar: PreferredSize(
-          preferredSize: Size.fromHeight(size * 0.06),
-          child: AppBar(
-            backgroundColor: const Color.fromRGBO(41, 47, 63, 0.5),
-            centerTitle: true,
-            title: Text(
-              userName,
-              overflow: TextOverflow.ellipsis,
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  FirebaseClass().signOut().then((value) {
-                    Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => const Auth()),
-                        (route) => false);
-                  }).catchError((error) {
-                    // Handle any errors here.
-                  });
-                },
-                icon: const Icon(Icons.exit_to_app_outlined),
-              )
+              ),
             ],
           ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [Expanded(child: chatscreen), NewMessage()],
-        ));
+      ),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(size * 0.06),
+        child: AppBar(
+          backgroundColor: const Color.fromRGBO(41, 47, 63, 0.5),
+          centerTitle: true,
+          title: Text(
+            userName,
+            overflow: TextOverflow.ellipsis,
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                FirebaseClass().signOut().then((value) {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Auth()),
+                      (route) => false);
+                }).catchError((error) {
+                  // Handle any errors here.
+                });
+              },
+              icon: const Icon(Icons.exit_to_app_outlined),
+            )
+          ],
+        ),
+      ),
+      body: BodyWidget(collectionName: collection),
+    );
+  }
+}
+
+class BodyWidget extends StatefulWidget {
+  final String collectionName;
+
+  const BodyWidget({Key? key, required this.collectionName}) : super(key: key);
+
+  @override
+  _BodyWidgetState createState() => _BodyWidgetState();
+}
+
+class _BodyWidgetState extends State<BodyWidget> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(
+          child: ChatMessage(collectionName: widget.collectionName),
+        ),
+        NewMessage(collectionName: widget.collectionName),
+      ],
+    );
   }
 }
