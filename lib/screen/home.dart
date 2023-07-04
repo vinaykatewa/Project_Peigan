@@ -18,6 +18,7 @@ class _HomeState extends State<Home> {
   String userEmail = '';
   String imageUrl = '';
   String collection = 'chat';
+  String channel= 'General';
 
   @override
   void initState() {
@@ -38,12 +39,13 @@ class _HomeState extends State<Home> {
     });
   }
 
-  void updateCollection(String newCollection) {
+  void updateCollection(String newCollection, String newChannel) {
     Future.delayed(const Duration(milliseconds: 100), () {
       Navigator.pop(context);
     });
     setState(() {
       collection = newCollection;
+      channel = newChannel;
     });
   }
 
@@ -85,14 +87,14 @@ class _HomeState extends State<Home> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    updateCollection('chat');
+                    updateCollection('chat', 'General');
                   },
                   child: const ListTile(
                     leading: CircleAvatar(
                       backgroundImage: AssetImage('assets/general.png'),
                     ),
                     title: Text(
-                      'General Channel',
+                      'General',
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -104,7 +106,7 @@ class _HomeState extends State<Home> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    updateCollection('Anime Soul');
+                    updateCollection('Anime Soul', 'Anime Soul');
                   },
                   child: const ListTile(
                     leading: CircleAvatar(
@@ -123,14 +125,14 @@ class _HomeState extends State<Home> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    updateCollection('Humor');
+                    updateCollection('Humor', 'Humorous');
                   },
                   child: const ListTile(
                     leading: CircleAvatar(
                       backgroundImage: AssetImage('assets/humor.png'),
                     ),
                     title: Text(
-                      'Humor',
+                      'Humorous',
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -148,7 +150,7 @@ class _HomeState extends State<Home> {
           backgroundColor: const Color.fromRGBO(41, 47, 63, 0.5),
           centerTitle: true,
           title: Text(
-            userName,
+            channel,
             overflow: TextOverflow.ellipsis,
           ),
           actions: [

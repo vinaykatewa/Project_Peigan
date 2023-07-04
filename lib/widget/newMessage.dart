@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
-class NewMessage extends StatefulWidget {
+class NewMessage extends StatefulWidget{
   final String collectionName;
   const NewMessage({Key? key, required this.collectionName});
 
@@ -11,9 +11,8 @@ class NewMessage extends StatefulWidget {
   State<NewMessage> createState() => _NewMessageState();
 }
 
-class _NewMessageState extends State<NewMessage> {
+class _NewMessageState extends State<NewMessage>{
   final messageController = TextEditingController();
-
   @override
   void dispose() {
     messageController.dispose();
