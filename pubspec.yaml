@@ -72,6 +72,7 @@ flutter:
     - assets/animeSoul.png
     - assets/general.png
     - assets/humor.png
+    - assets/anonymous.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
