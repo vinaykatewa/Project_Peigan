@@ -50,6 +50,22 @@ class FirebaseClass{
     }
   }
 
+  Future<UserCredential?> anonymousUser() async {
+    try {
+      final userCredential = await FirebaseAuth.instance.signInAnonymously();
+      print("Signed in with temporary account.");
+      return userCredential;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case "operation-not-allowed":
+          print("Anonymous auth hasn't been enabled for this project.");
+          break;
+        default:
+          print("Unknown error.");
+      }
+    }
+  }
+  
   signOut() async {
     await FirebaseAuth.instance.signOut();
   }

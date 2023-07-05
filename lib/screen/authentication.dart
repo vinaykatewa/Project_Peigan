@@ -4,6 +4,7 @@ import 'package:hey/screen/home.dart';
 import 'package:hey/widget/userImage.dart';
 import 'package:hey/providers/provider.dart';
 import 'package:provider/provider.dart';
+import 'package:hey/screen/anonymouseHome.dart';
 import 'dart:io';
 
 class Auth extends StatefulWidget {
@@ -31,6 +32,7 @@ class _AuthState extends State<Auth> {
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
     final height = MediaQuery.of(context).size.height;
+
     void submitSignup() async {
       if (authFormKey.currentState!.validate() && selectedImage != null) {
         setState(() {
@@ -50,25 +52,32 @@ class _AuthState extends State<Auth> {
                 MaterialPageRoute(builder: (context) => const Home()),
                 (route) => false);
           }
-        }).catchError((error) {
+          }).catchError((error) {
           setState(() {
-          isLoading = false;
-        });
-          print('An error occurred: $error');
+            isLoading = false;
+          });
+          showDialog(context: context, builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              title: const Text('Error'),
+              content: Text(error.toString()),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))
+              ],
+            );
+          });
         });
       }
     }
 
-    void submitLogin() async {
-
+    submitLogin() async {
       if (authFormKey.currentState!.validate()) {
         setState(() {
-        isLoading = true;
-      });
-        firebase.signin(email, password).then((result) {
-          setState(() {
-          isLoading = false;
+          isLoading = true;
         });
+        firebase.signin(email, password).then((result) {
           if (result != null) {
             Navigator.pushAndRemoveUntil(
                 context,
@@ -77,27 +86,64 @@ class _AuthState extends State<Auth> {
           }
         }).catchError((error) {
           setState(() {
-          isLoading = false;
-        });
+            isLoading = false;
+          });
           authProvider.toogleUser();
         });
       }
     }
 
+    anonymousUser() {
+      return showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              title: const Text('Anonymous User'),
+              content: const Text("You won't be able to send message. You can only see them."),
+              actions: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Cancel')),
+                    TextButton(
+                        onPressed: () async{
+                           final userCredential =
+                      await firebase.anonymousUser();
+                  Navigator.pop(context);
+                  if (userCredential != null) {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AnonymousHome()),
+                      (route) => false,
+                    );
+                  }
+                        },
+                        child: const Text('Agree')),
+                  ],
+                ),
+              ],
+            );
+          });
+    }
     return Stack(
       children: [
         Scaffold(
-            backgroundColor: const Color.fromRGBO(15, 26, 58, 1),
+            backgroundColor: const Color.fromRGBO(41, 47, 63, 0.3),
             body: Center(
               child: SingleChildScrollView(
                   child: Column(
                 children: <Widget>[
-                  SizedBox(
-                    height: height * 0.009,
-                  ),
                   Card(
                     margin: const EdgeInsets.all(10),
                     color: const Color.fromRGBO(15, 26, 58, 0.5),
+                    borderOnForeground: true,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20)),
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(16),
@@ -153,7 +199,8 @@ class _AuthState extends State<Auth> {
                                             textCapitalization:
                                                 TextCapitalization.none,
                                             validator: (value) {
-                                              if (value == null || value.isEmpty) {
+                                              if (value == null ||
+                                                  value.isEmpty) {
                                                 return 'Please Enter UserName';
                                               }
                                               return null;
@@ -161,8 +208,8 @@ class _AuthState extends State<Auth> {
                                             decoration: const InputDecoration(
                                               hintText: 'Enter Username',
                                               labelText: 'Username',
-                                              labelStyle:
-                                                  TextStyle(color: Colors.white),
+                                              labelStyle: TextStyle(
+                                                  color: Colors.white),
                                             ),
                                             onChanged: (value) {
                                               setState(() {
@@ -192,7 +239,8 @@ class _AuthState extends State<Auth> {
                                       focusColor: Colors.blue,
                                       hintText: 'Enter a password',
                                       labelText: 'Password',
-                                      labelStyle: TextStyle(color: Colors.white),
+                                      labelStyle:
+                                          TextStyle(color: Colors.white),
                                     ),
                                     onChanged: (value) {
                                       setState(() {
@@ -225,24 +273,33 @@ class _AuthState extends State<Auth> {
                                         onPressed: submitSignup,
                                         child: Text('Register')),
 
-                                ///login and registration button
+                                ///login and registration buttonopenDialogBox
                                 ///
                                 ///
                                 ///logic ends here
                                 SizedBox(
                                   height: height * 0.02,
                                 ),
-                                authProvider.alreadyUser
-                                    ? TextButton(
-                                        onPressed: () {
-                                          authProvider.toogleUser();
-                                        },
-                                        child: const Text('New User'))
-                                    : TextButton(
-                                        onPressed: () {
-                                          authProvider.toogleUser();
-                                        },
-                                        child: const Text('Login'))
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                        onPressed: anonymousUser,
+                                        child: const Text('Anonymous')),
+                                    authProvider.alreadyUser
+                                        ? TextButton(
+                                            onPressed: () {
+                                              authProvider.toogleUser();
+                                            },
+                                            child: const Text('New User'))
+                                        : TextButton(
+                                            onPressed: () {
+                                              authProvider.toogleUser();
+                                            },
+                                            child: const Text('Login')),
+                                  ],
+                                )
                               ]),
                         ),
                       ),
@@ -251,13 +308,14 @@ class _AuthState extends State<Auth> {
                 ],
               )),
             )),
-            
-            /// loading loading
-            /// 
-            if (isLoading)
+
+        /// loading loading
+        ///
+        if (isLoading)
           Container(
-            color: Colors.black.withOpacity(0.5),  // this is a simple dark overlay, you can adjust its color and opacity as you wish
-            child: Center(
+            color: Colors.black.withOpacity(
+                0.5), // this is a simple dark overlay, you can adjust its color and opacity as you wish
+            child: const Center(
               child: CircularProgressIndicator(),
             ),
           ),

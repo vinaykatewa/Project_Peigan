@@ -137,7 +137,7 @@ class _HomeState extends State<AnonymousHome> {
           actions: [
             IconButton(
               onPressed: () {
-                FirebaseClass(authProvider).signOut().then((value) {
+                FirebaseClass().signOut().then((value) {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => const Auth()),
