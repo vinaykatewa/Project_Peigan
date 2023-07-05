@@ -162,7 +162,7 @@ class _AuthState extends State<Auth> {
                                   keyboardType: TextInputType.emailAddress,
                                   textCapitalization: TextCapitalization.none,
                                   validator: (value) {
-                                    if (value == null || value.isEmpty) {
+                                    if (value == null || value.isEmpty || !value.contains('@gmail.com')) {
                                       return 'Please Enter email';
                                     }
                                     return null;
